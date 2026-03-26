@@ -15,7 +15,7 @@ export function getConditionEmoji(icon = "") {
 }
 
 // Human-friendly message using precipitation probability (more accurate than humidity alone)
-export function getWeatherMessage(temp, humidity, wind, precipProb = 0) {
+export function getWeatherMessage(temp, wind, precipProb = 0) {
   if (precipProb > 70) return "Rain likely — consider rescheduling ☔";
   if (precipProb > 40) return "Possible showers — plan accordingly 🌦️";
   if (temp < 32) return "Freezing — probably too cold ❄️";

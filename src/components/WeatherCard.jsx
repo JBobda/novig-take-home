@@ -32,7 +32,7 @@ export default function WeatherCard({ day, timeRange }) {
       </div>
 
       <div className="card-message">
-        {getWeatherMessage(temp, humidity, windspeed, precipprob)}
+        {getWeatherMessage(temp, windspeed, precipprob)}
       </div>
 
       <div className="card-details">
