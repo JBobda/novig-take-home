@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import LocationInput from "./components/LocationInput";
 import { fetchWeather } from "./services/weatherApi";
 import DaySelector from "./components/DaySelector";
 import TimeRangeSelector from "./components/TimeRangeSelector";
 import WeatherComparison from "./components/WeatherComparison";
+import "./styles.css";
 
 export default function App() {
   const [location, setLocation] = useState("New York");
@@ -14,6 +15,9 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // useCallback so LocationInput's debounce effect doesn't re-fire on every render
+  const handleLocationChange = useCallback((loc) => setLocation(loc), []);
+
   useEffect(() => {
     async function loadWeather() {
       setLoading(true);
@@ -22,9 +26,9 @@ export default function App() {
       try {
         const result = await fetchWeather(location);
         setData(result);
-      } catch (error) {
-        setError("Failed to load weather data.")
-        console.error(error);
+      } catch {
+        setError(`Could not find weather data for "${location}". Try a different city or address.`);
+        setData(null);
       } finally {
         setLoading(false);
       }
@@ -33,23 +37,27 @@ export default function App() {
     loadWeather();
   }, [location]);
 
-  // Split weeks
   const thisWeek = data?.days?.slice(0, 7);
   const nextWeek = data?.days?.slice(7, 14);
 
-
   return (
-    <div style={{ padding: "20px", fontFamily: "sans-serif" }}>
-      <h1>🌤️ Meetup Weather Planner</h1>
+    <div className="app">
+      <div className="app-header">
+        <h1>Meetup Weather Planner</h1>
+        <p>Compare this week vs. next week for your recurring outdoor event</p>
+      </div>
 
-      <LocationInput onChange={setLocation} />
+      <div className="controls">
+        <LocationInput onChange={handleLocationChange} />
+        <DaySelector selectedDay={selectedDay} onChange={setSelectedDay} />
+        <TimeRangeSelector selectedTime={timeRange} onChange={setTimeRange} />
+      </div>
 
-      <DaySelector selectedDay={selectedDay} onChange={setSelectedDay} />
-      <TimeRangeSelector selectedTime={timeRange} onChange={setTimeRange} />
+      {loading && <div className="status-bar loading">Fetching weather for {location}…</div>}
 
-      {loading && <p>Loading...</p>}
+      {error && <div className="status-bar error">{error}</div>}
 
-      {data && (
+      {!loading && data && (
         <WeatherComparison
           thisWeek={thisWeek}
           nextWeek={nextWeek}

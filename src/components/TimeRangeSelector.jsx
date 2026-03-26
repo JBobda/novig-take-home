@@ -1,22 +1,25 @@
-export default function TimeRangeSelector({ selectedTime, onChange }) {
-  const ranges = ["morning", "afternoon", "evening"];
+const TIME_RANGES = [
+  { id: "morning", label: "Morning", sub: "9 AM" },
+  { id: "afternoon", label: "Afternoon", sub: "3 PM" },
+  { id: "evening", label: "Evening", sub: "7 PM" },
+];
 
+export default function TimeRangeSelector({ selectedTime, onChange }) {
   return (
-    <div>
-      <p>Select Time:</p>
-      {ranges.map((range) => (
-        <button
-          key={range}
-          onClick={() => onChange(range)}
-          style={{
-            margin: "5px",
-            background: selectedTime === range ? "#28a745" : "#eee",
-            padding: "5px 10px"
-          }}
-        >
-          {range}
-        </button>
-      ))}
+    <div className="control-group">
+      <span className="control-label">Time of day</span>
+      <div className="pill-group">
+        {TIME_RANGES.map(({ id, label, sub }) => (
+          <button
+            key={id}
+            onClick={() => onChange(id)}
+            className={`pill ${selectedTime === id ? "active-time" : ""}`}
+            aria-pressed={selectedTime === id}
+          >
+            {label} <span style={{ opacity: 0.65, fontSize: "0.8em" }}>{sub}</span>
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
